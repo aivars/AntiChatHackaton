@@ -16,6 +16,7 @@
 		6082C9731F7F36010057DBBB /* messageItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6082C9701F7F36000057DBBB /* messageItem.swift */; };
 		6082C9741F7F36010057DBBB /* MessageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6082C9711F7F36000057DBBB /* MessageTableViewCell.swift */; };
 		6082C9751F7F36010057DBBB /* UIViewExtention.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6082C9721F7F36010057DBBB /* UIViewExtention.swift */; };
+		60BAF1961F7F92AC00813DF3 /* MessagesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60BAF1951F7F92AC00813DF3 /* MessagesViewController.swift */; };
 		948F1893523C94695F5A149A /* libPods-Chat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EC84D0AFCEE44C5EE68A262E /* libPods-Chat.a */; };
 /* End PBXBuildFile section */
 
@@ -33,6 +34,7 @@
 		6082C9701F7F36000057DBBB /* messageItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = messageItem.swift; sourceTree = "<group>"; };
 		6082C9711F7F36000057DBBB /* MessageTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageTableViewCell.swift; sourceTree = "<group>"; };
 		6082C9721F7F36010057DBBB /* UIViewExtention.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIViewExtention.swift; sourceTree = "<group>"; };
+		60BAF1951F7F92AC00813DF3 /* MessagesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesViewController.swift; sourceTree = "<group>"; };
 		D8A12EE937C2320ABAF087A9 /* Pods-Chat.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Chat.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Chat/Pods-Chat.debug.xcconfig"; sourceTree = "<group>"; };
 		EC84D0AFCEE44C5EE68A262E /* libPods-Chat.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Chat.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -85,6 +87,7 @@
 				6082C9721F7F36010057DBBB /* UIViewExtention.swift */,
 				6082C95D1F7F30920057DBBB /* ViewController.swift */,
 				6082C95F1F7F30920057DBBB /* Main.storyboard */,
+				60BAF1951F7F92AC00813DF3 /* MessagesViewController.swift */,
 				6082C9621F7F30920057DBBB /* Assets.xcassets */,
 				6082C9641F7F30920057DBBB /* LaunchScreen.storyboard */,
 				6082C9671F7F30920057DBBB /* Info.plist */,
@@ -239,6 +242,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6082C9731F7F36010057DBBB /* messageItem.swift in Sources */,
+				60BAF1961F7F92AC00813DF3 /* MessagesViewController.swift in Sources */,
 				6082C95E1F7F30920057DBBB /* ViewController.swift in Sources */,
 				6082C96F1F7F35E00057DBBB /* ChatViewController.swift in Sources */,
 				6082C9751F7F36010057DBBB /* UIViewExtention.swift in Sources */,

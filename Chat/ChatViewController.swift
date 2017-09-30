@@ -7,7 +7,8 @@
 //
 
 import UIKit
-//import PubNub
+//import PubNub <- bridge header is used for iOS7 support
+
 
 
 class ChatViewController: UIViewController, PNObjectEventListener, UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate {

@@ -10,5 +10,9 @@
 #define Char_Bridging_Header_h
 
 #import "PubNub/PubNub.h"
+#import "JSQMessagesViewController.h"
+#import "JSQMessages.h"
+#import "JSQMessageData.h"
+#import "JSQSystemSoundPlayer.h"
 
 #endif /* Char_Bridging_Header_h */
