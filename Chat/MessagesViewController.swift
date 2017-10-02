@@ -18,7 +18,7 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener {
     lazy var incomingBubbleImageView: JSQMessagesBubbleImage = self.setupIncomingBubble()
     var client: PubNub?
     var channelName = "antichat_hackathon" // <<-- Hardcoded chat channel used for hackaton
-    var userName = "Anonymous" // <<-- hardcoded user name, replace with "" if you like to be anonymous
+    var userName = "Aivars" // <<-- hardcoded user name
     var statisticLabel = UILabel(frame: CGRect(x: 10, y: 35, width: 200, height: 16))
 
     override func viewDidLoad() {
@@ -27,8 +27,9 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener {
         // Do any additional setup after loading the view.
         initiation()
         
-        let n = Int(arc4random_uniform(1000))
-        senderId = "anonymous" + String(n)
+//        let n = Int(arc4random_uniform(1000))
+//        senderId = "Anonymous" + String(n)
+        senderId = "Aivars" // <- should be generated and stored for randome value
         senderDisplayName = userName
         
         // === UI changes ===
@@ -93,7 +94,7 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener {
     // Update active users value on joi,leave, etc events
     func client(_ client: PubNub, didReceivePresenceEvent event: PNPresenceEventResult) {
         getStatistisc() // Occupancy also can be used as value, could be tested later
-        // Good enaugh for hackaton, refresh frequency limit can be used for production
+        // refresh frequency limit can be used for production, not actual for such quite channel
     }
 
     func getStatistisc() {
@@ -120,20 +121,17 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener {
         }
         messagesArray.append((dictToJSQMessage(dictionary: receivedMessage as! Dictionary<String, String>)))
         self.finishReceivingMessage()
-//            print ("message parsing erro. Original message: \(receivedMessage) on channel " +
-//                "\((message.data.subscription ?? message.data.channel)!) at time: " +
-//                "\(message.data.timetoken)")
     }
     
     // MARK: - Configure collectionView for message displaying
     private func setupOutgoingBubble() -> JSQMessagesBubbleImage {
         let bubbleImageFactory = JSQMessagesBubbleImageFactory()
-        return bubbleImageFactory!.outgoingMessagesBubbleImage(with: UIColor.purple)
+        return bubbleImageFactory!.outgoingMessagesBubbleImage(with: UIColor.jsq_messageBubbleGreen())
     }
     
     private func setupIncomingBubble() -> JSQMessagesBubbleImage {
         let bubbleImageFactory = JSQMessagesBubbleImageFactory()
-        return bubbleImageFactory!.incomingMessagesBubbleImage(with: UIColor.jsq_messageBubbleGreen())
+        return bubbleImageFactory!.incomingMessagesBubbleImage(with: UIColor.purple)
     }
     
     override func collectionView(_ collectionView: JSQMessagesCollectionView!, messageBubbleImageDataForItemAt indexPath: IndexPath!) -> JSQMessageBubbleImageDataSource! {

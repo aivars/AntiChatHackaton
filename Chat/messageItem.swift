@@ -24,9 +24,10 @@ func dictToJSQMessage (dictionary: Dictionary<String, Any>) -> JSQMessage{
             parsedMessage = each.value as! String
             print("Parsed message in dictionary: \(each.value)")
         }
-//        if each.key == "username" || each.key == "sender" || each.key == "author" || each.key == "name" || each.key == "senderName" {
-//            parsedUsername = each.value as! String
-//        }
+        if each.key == "username" || each.key == "sender" || each.key == "name" || each.key == "senderName" {
+            parsedUsername = each.value as! String
+            print("parsed uer name: \(parsedUsername)")
+        }
 
     }
     let message = JSQMessage(senderId: parsedUsername, displayName: parsedUsername, text: parsedMessage)
