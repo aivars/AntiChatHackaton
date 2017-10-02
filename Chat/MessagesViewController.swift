@@ -19,7 +19,7 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener {
     var client: PubNub?
     var channelName = "antichat_hackathon" // <<-- Hardcoded chat channel used for hackaton
     var userName = "Anonymous" // <<-- hardcoded user name, replace with "" if you like to be anonymous
-    var statisticLabel = UILabel(frame: CGRect(x: 20, y: 10, width: 200, height: 16))
+    var statisticLabel = UILabel(frame: CGRect(x: 10, y: 35, width: 200, height: 16))
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,30 +37,21 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener {
         // No avatars
         collectionView!.collectionViewLayout.incomingAvatarViewSize = CGSize.zero
         collectionView!.collectionViewLayout.outgoingAvatarViewSize = CGSize.zero
+        automaticallyScrollsToMostRecentMessage = true
         self.collectionView.backgroundColor = UIColor.black
-        self.collectionView?.collectionViewLayout.sectionInset = UIEdgeInsets(top: 50, left: 0, bottom: 0, right: 0)
+        self.collectionView?.collectionViewLayout.sectionInset = UIEdgeInsets(top: 60, left: 0, bottom: 0, right: 0)
         // Add view on top for custome labels
-        let selectableView = UIView(frame: CGRect(x: 0, y: 30, width: self.view.bounds.width, height: 40))
+        let selectableView = UIView(frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: 60))
         selectableView.backgroundColor = .black
-        statisticLabel.textColor = UIColor.lightGray
+        statisticLabel.textColor = UIColor.white
         statisticLabel.text = "Users on channel: 0"
         selectableView.addSubview(statisticLabel)
         view.addSubview(selectableView)
-        
-        // test mesages
-//        // messages from someone else
-//        addMessage(withId: "foo", name: "Mr.Bolt", text: "Hi there!")
-//        // messages sent from local sender
-//        addMessage(withId: senderId, name: "Me", text: "Hi!")
-//        addMessage(withId: senderId, name: "Me", text: "I'm just bot, but keep talking :)")
-//        // animates the receiving of a new message on the view
-//        finishReceivingMessage()
-        print("+++++++ Channel History +++++++")
-        chanelHistory()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         chanelHistory()
+        finishReceivingMessage()
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -85,12 +76,19 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener {
         client?.historyForChannel(channelName, withCompletion: { (result, status) in
             if status == nil {
                 // #To-Do parse and display chanel history
-                print(result?.data.messages as Any)
+                //print(result?.data.messages as Any)
+                for message in (result?.data.messages)! {
+                    print("message in results: \(message)")
+                    self.messagesArray.append(dictToJSQMessage(dictionary: message as! Dictionary<String, AnyObject>))
+                    self.finishReceivingMessage()
+
+                }
             }
             else {
                 print(status?.errorData as Any)
             }
         })
+        
     }
     // Update active users value on joi,leave, etc events
     func client(_ client: PubNub, didReceivePresenceEvent event: PNPresenceEventResult) {
@@ -120,13 +118,11 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener {
             print("No payload received")
             return
         }
-        messagesArray.append((dictToJSQMessage(dictionary: receivedMessage as! Dictionary<String, NSString>)))
-            print ("message parsing erro. Original message: \(receivedMessage) on channel " +
-                "\((message.data.subscription ?? message.data.channel)!) at time: " +
-                "\(message.data.timetoken)")
-        
-        
+        messagesArray.append((dictToJSQMessage(dictionary: receivedMessage as! Dictionary<String, String>)))
         self.finishReceivingMessage()
+//            print ("message parsing erro. Original message: \(receivedMessage) on channel " +
+//                "\((message.data.subscription ?? message.data.channel)!) at time: " +
+//                "\(message.data.timetoken)")
     }
     
     // MARK: - Configure collectionView for message displaying
@@ -163,14 +159,6 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener {
     }
     
     // MARK : Message procesing
-    
-    //Helper for mesage bulding
-//    private func addMessage(withId id: String, name: String, text: String) {
-//        if let message = JSQMessage(senderId: id, displayName: name, text: text) {
-//            messagesArray.append(message)
-//        }
-//    }
-
     // publish on send button
     override func didPressSend(_ button: UIButton!, withMessageText text: String!, senderId: String!, senderDisplayName: String!, date: Date!) {
         let messageItem = [ // dictionary for message presenting

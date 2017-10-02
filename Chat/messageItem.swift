@@ -14,6 +14,30 @@ struct MessageItem {
     
 }
 
+///////////// functions used for JSQMessage procesing //////////////////////
+
+func dictToJSQMessage (dictionary: Dictionary<String, Any>) -> JSQMessage{
+    var parsedMessage = "Incorect message format"
+    var parsedUsername = "Anonymos"
+    for each in dictionary {
+        if each.key == "message" || each.key == "text" || each.key == "chatMsg"  {
+            parsedMessage = each.value as! String
+            print("Parsed message in dictionary: \(each.value)")
+        }
+//        if each.key == "username" || each.key == "sender" || each.key == "author" || each.key == "name" || each.key == "senderName" {
+//            parsedUsername = each.value as! String
+//        }
+
+    }
+    let message = JSQMessage(senderId: parsedUsername, displayName: parsedUsername, text: parsedMessage)
+    print(message as Any)
+    return message!
+}
+
+
+
+///////////////// legacy functions used for custom UI. Can be removed as soon as ChatView is not supported //////////
+
 func messageItemToDictionary(_ chatmessage : MessageItem) -> [String : NSString]{
     return [
         //"uuid": NSString(string: chatmessage.uuid),
@@ -41,21 +65,4 @@ func dictToMessage (dictionary: Dictionary<String, NSString>) -> MessageItem {
    
 }
 
-func dictToJSQMessage (dictionary: Dictionary<String, NSString>) -> JSQMessage{
-    var parsedMessage = ""
-    var parsedUsername = "Anonymos"
-    for each in dictionary {
-        if each.key == "message" || each.key == "text" || each.key == "chatMsg"  {
-            parsedMessage = each.value as String
-        } else {
-            parsedMessage = "Incorect message format"
-        }
-        if each.key == "username" || each.key == "sender" || each.key == "author" || each.key == "name" || each.key == "senderName" {
-            parsedUsername = each.value as String
-        }
-    }
-    let message = JSQMessage(senderId: parsedUsername, displayName: parsedUsername, text: parsedMessage)
-    return message!
-    
-}
 
