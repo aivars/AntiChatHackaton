@@ -77,12 +77,14 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener {
             if status == nil {
                 print(result?.data.messages as Any)
                 for message in (result?.data.messages)! {
-                    if let messageDictionary = message as? Dictionary<String, Any>  != nil   {
-                        self.messagesArray.append(dictToJSQMessage(dictionary : messageDictionary))
-                        self.finishReceivingMessage()
-                    }
-                    else {
-                        print("error in mesage parsing for: \(message)")
+                    do {
+                        let messageDictionary = try message as? Dictionary<String, Any>
+                        if messageDictionary != nil {
+                            self.messagesArray.append(dictToJSQMessage(dictionary : messageDictionary!))
+                            self.finishReceivingMessage()
+                        }
+                    } catch {
+                       print("error in mesage parsing for: \(message)")
                     }
                 }
             }
