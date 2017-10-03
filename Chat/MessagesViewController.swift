@@ -73,16 +73,17 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener {
     }
     //fetch channel history
     func chanelHistory(){
-        
         client?.historyForChannel(channelName, withCompletion: { (result, status) in
             if status == nil {
-                // #To-Do parse and display chanel history
-                //print(result?.data.messages as Any)
+                print(result?.data.messages as Any)
                 for message in (result?.data.messages)! {
-                    print("message in results: \(message)")
-                    self.messagesArray.append(dictToJSQMessage(dictionary: message as! Dictionary<String, AnyObject>))
-                    self.finishReceivingMessage()
-
+                    if let messageDictionary = message as? Dictionary<String, Any>  != nil   {
+                        self.messagesArray.append(dictToJSQMessage(dictionary : messageDictionary))
+                        self.finishReceivingMessage()
+                    }
+                    else {
+                        print("error in mesage parsing for: \(message)")
+                    }
                 }
             }
             else {

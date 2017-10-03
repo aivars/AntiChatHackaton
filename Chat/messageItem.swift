@@ -21,12 +21,21 @@ func dictToJSQMessage (dictionary: Dictionary<String, Any>) -> JSQMessage{
     var parsedUsername = "Anonymos"
     for each in dictionary {
         if each.key == "message" || each.key == "text" || each.key == "chatMsg"  {
-            parsedMessage = each.value as! String
-            print("Parsed message in dictionary: \(each.value)")
+            if let parsedMessage = each.value as Optional {
+                    print("Parsed message in dictionary: \(each.value)")
+            } else {
+                  parsedMessage = "message is not parsed correctly"
+            }
+            
         }
         if each.key == "username" || each.key == "sender" || each.key == "name" || each.key == "senderName" {
-            parsedUsername = each.value as! String
-            print("parsed uer name: \(parsedUsername)")
+            if let parsedUsername = each.value as Optional {
+                print("parsed uer name: \(parsedUsername)")
+            } else {
+                print("username casting failed for value \(each.value)")
+                parsedUsername = "Unknown"
+            }
+            
         }
 
     }
