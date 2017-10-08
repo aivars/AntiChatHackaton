@@ -1,0 +1,1 @@
+../../../StickerPipe/SDK/Core/Collections/StickerSettings/STKStickersSettingsViewController.h

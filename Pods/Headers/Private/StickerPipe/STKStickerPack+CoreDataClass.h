@@ -1,0 +1,1 @@
+../../../StickerPipe/SDK/Core/CareDataService/Models/STKStickerPack+CoreDataClass.h

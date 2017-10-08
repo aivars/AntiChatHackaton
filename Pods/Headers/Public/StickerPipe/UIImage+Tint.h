@@ -1,0 +1,1 @@
+../../../StickerPipe/SDK/Core/UIImage+Tint.h

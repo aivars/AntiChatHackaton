@@ -14,5 +14,6 @@
 #import "JSQMessages.h"
 #import "JSQMessageData.h"
 #import "JSQSystemSoundPlayer.h"
+#import <Stickerpipe/Stickerpipe.h>
 
 #endif /* Char_Bridging_Header_h */

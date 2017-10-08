@@ -1,0 +1,1 @@
+../../../StickerPipe/SDK/Core/Stickers/StickerDelegateManager/STKStickerDelegateManager.h

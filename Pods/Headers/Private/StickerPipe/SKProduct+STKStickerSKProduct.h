@@ -1,0 +1,1 @@
+../../../StickerPipe/SDK/Core/Categories/SKProduct+STKStickerSKProduct.h

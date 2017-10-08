@@ -1,0 +1,1 @@
+../../../StickerPipe/SDK/Core/Stickers/StickersSeparator/STKStickersSeparator.h

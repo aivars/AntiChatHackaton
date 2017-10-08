@@ -11,4 +11,9 @@ target ‘Chat’ do
     platform :ios, '7.0' # (if you don't need to use iOS 7, then see other Podfile)
     pod "PubNub", "~> 4"
     pod 'JSQMessagesViewController'
+    pod "StickerPipe"
+    pod 'Firebase/Storage'
+    pod 'Firebase/Auth'
+    pod 'Firebase/Database'
+    
 end

@@ -1,0 +1,1 @@
+../../../StickerPipe/SDK/Core/Buttons/STKShowStickerButton.h

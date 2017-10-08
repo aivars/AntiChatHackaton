@@ -1,0 +1,1 @@
+../../../StickerPipe/SDK/Core/STKSearchModel.h

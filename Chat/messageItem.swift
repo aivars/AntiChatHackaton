@@ -9,12 +9,14 @@
 import Foundation
 
 struct MessageItem {
+    var senderId: String
     var username: String
     var message: String
-    
+    var media: String
 }
 
 ///////////// functions used for JSQMessage procesing //////////////////////
+
 
 func dictToJSQMessage (dictionary: Dictionary<String, Any>) -> JSQMessage{
     var parsedMessage = "Incorect message format"
@@ -26,16 +28,23 @@ func dictToJSQMessage (dictionary: Dictionary<String, Any>) -> JSQMessage{
         if each.key == "username" || each.key == "sender" || each.key == "name" || each.key == "senderName" {
             parsedUsername = each.value as! String
         }
-
     }
     let message = JSQMessage(senderId: parsedUsername, displayName: parsedUsername, text: parsedMessage)
-    print(message as Any)
+    //print(message as Any)
     return message!
+}
+
+// Image messages converting
+
+func mediaMessage () {
+    
 }
 
 
 
-///////////////// legacy functions used for custom UI. Can be removed as soon as ChatView is not supported //////////
+
+
+///////////////// depricated functions used for custom UI. Can be removed as soon as ChatView is not supported //////////
 
 func messageItemToDictionary(_ chatmessage : MessageItem) -> [String : NSString]{
     return [
@@ -60,7 +69,7 @@ func dictToMessage (dictionary: Dictionary<String, NSString>) -> MessageItem {
     }
     
     
-    return MessageItem(username: parsedUsername, message: parsedMessage)
+    return MessageItem(senderId: parsedUsername, username: parsedUsername, message: parsedMessage, media: "")
    
 }
 

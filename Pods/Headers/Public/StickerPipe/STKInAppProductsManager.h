@@ -1,0 +1,1 @@
+../../../StickerPipe/SDK/Core/IdentityService/STKInAppProductsManager.h

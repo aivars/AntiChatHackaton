@@ -1,0 +1,1 @@
+../../../StickerPipe/SDK/Core/CareDataService/NSManagedObjectContext+STKAdditions.h

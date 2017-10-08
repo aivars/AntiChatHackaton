@@ -91,6 +91,12 @@ if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_resource "${PODS_ROOT}/JSQMessagesViewController/JSQMessagesViewController/Views/JSQMessagesLoadEarlierHeaderView.xib"
   install_resource "${PODS_ROOT}/JSQMessagesViewController/JSQMessagesViewController/Views/JSQMessagesToolbarContentView.xib"
   install_resource "${PODS_ROOT}/JSQMessagesViewController/JSQMessagesViewController/Views/JSQMessagesTypingIndicatorFooterView.xib"
+  install_resource "${PODS_ROOT}/StickerPipe/SDK/Resources/STKStickerSettingsCell.xib"
+  install_resource "${PODS_ROOT}/StickerPipe/SDK/Resources/STKStickersSettingsViewController.xib"
+  install_resource "${PODS_ROOT}/StickerPipe/SDK/Resources/STKStickersShopViewController.xib"
+  install_resource "${PODS_ROOT}/StickerPipe/SDK/Resources/STKStickersView.xib"
+  install_resource "${PODS_ROOT}/StickerPipe/SDK/Resources/StickerModel.xcdatamodeld"
+  install_resource "${PODS_ROOT}/StickerPipe/SDK/Resources/Stickerpipe.xcassets"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
   install_resource "${PODS_ROOT}/JSQMessagesViewController/JSQMessagesViewController/Assets/JSQMessagesAssets.bundle"
@@ -100,6 +106,12 @@ if [[ "$CONFIGURATION" == "Release" ]]; then
   install_resource "${PODS_ROOT}/JSQMessagesViewController/JSQMessagesViewController/Views/JSQMessagesLoadEarlierHeaderView.xib"
   install_resource "${PODS_ROOT}/JSQMessagesViewController/JSQMessagesViewController/Views/JSQMessagesToolbarContentView.xib"
   install_resource "${PODS_ROOT}/JSQMessagesViewController/JSQMessagesViewController/Views/JSQMessagesTypingIndicatorFooterView.xib"
+  install_resource "${PODS_ROOT}/StickerPipe/SDK/Resources/STKStickerSettingsCell.xib"
+  install_resource "${PODS_ROOT}/StickerPipe/SDK/Resources/STKStickersSettingsViewController.xib"
+  install_resource "${PODS_ROOT}/StickerPipe/SDK/Resources/STKStickersShopViewController.xib"
+  install_resource "${PODS_ROOT}/StickerPipe/SDK/Resources/STKStickersView.xib"
+  install_resource "${PODS_ROOT}/StickerPipe/SDK/Resources/StickerModel.xcdatamodeld"
+  install_resource "${PODS_ROOT}/StickerPipe/SDK/Resources/Stickerpipe.xcassets"
 fi
 
 mkdir -p "${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
