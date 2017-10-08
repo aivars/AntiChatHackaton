@@ -15,5 +15,7 @@
 #import "JSQMessageData.h"
 #import "JSQSystemSoundPlayer.h"
 #import <Stickerpipe/Stickerpipe.h>
+#import <SDWebImage/UIImageView+WebCache.h>
+#import "SDWebImage/UIImageView+WebCache.h"
 
 #endif /* Char_Bridging_Header_h */

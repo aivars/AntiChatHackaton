@@ -77,7 +77,7 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener {
     func chanelHistory(){
         client?.historyForChannel(channelName, withCompletion: { (result, status) in
             if status == nil {
-                //print(result?.data.messages as Any)
+                print(result?.data.messages as Any)
                 for message in (result?.data.messages)! {
                     do {
                         let messageDictionary = try message as? Dictionary<String, Any>
@@ -109,9 +109,7 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener {
             if status == nil {
                 if let users = result?.data.occupancy {
                     self.statisticLabel.text = "Users on channel: \(String(describing: users))"
-                    
                 }
-                
             } else {
                 status?.retry()
             }
@@ -183,25 +181,19 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener {
         finishSendingMessage()
     }
     
-
-    
-    
-    
     // Open image picker
     override func didPressAccessoryButton (_ sender: UIButton){
         print("acessory Button presed")
         let imagePicker = UIImagePickerController()
-        imagePicker.delegate = self as! UIImagePickerControllerDelegate & UINavigationControllerDelegate
+        imagePicker.delegate = self as UIImagePickerControllerDelegate & UINavigationControllerDelegate
         self.present(imagePicker, animated: true, completion: nil)
         
     }
-    
+    // Send media messages
     func sendMedia(_ picture: UIImage?, video: URL?) {
-        print(picture as Any)
-        print(Storage.storage().reference())
         if let picture = picture {
             let filePath = "\(String(describing: Auth.auth().currentUser))/\(Date.timeIntervalSinceReferenceDate)"
-            print(filePath)
+            print("filePath: \(filePath)")
             let data = UIImageJPEGRepresentation(picture, 0.1)
             let metadata = StorageMetadata()
             metadata.contentType = "image/jpg"
@@ -224,7 +216,8 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener {
                                         if !status.isError {
                                             // Message successfully published to specified channel.
                                             JSQSystemSoundPlayer.jsq_playMessageSentSound() // message sent sound
-                                            //print("Sucessfully published message")
+                                            print("Sucessfully published message")
+                                            print(messageItem)
                                         }
                                         else{
                                             print("ERROR - SENDING MESSAGE FAILED")
@@ -232,11 +225,6 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener {
                                         }
                 })
                 self.finishSendingMessage()
-                
-                //                let newMessage = self.messageRef.childByAutoId()
-                //                let messageData = ["fileUrl": fileUrl, "senderId": self.senderId, "senderName": self.senderDisplayName, "MediaType": "PHOTO"]
-                //                newMessage.setValue(messageData)
-                
             }
             
         } else if let video = video {

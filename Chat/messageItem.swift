@@ -16,11 +16,11 @@ struct MessageItem {
 }
 
 ///////////// functions used for JSQMessage procesing //////////////////////
-
-
 func dictToJSQMessage (dictionary: Dictionary<String, Any>) -> JSQMessage{
     var parsedMessage = "Incorect message format"
     var parsedUsername = "Anonymos"
+    var parsedMediaUrl = ""
+    
     for each in dictionary {
         if each.key == "message" || each.key == "text" || each.key == "chatMsg"  {
             parsedMessage = each.value as! String
@@ -28,49 +28,26 @@ func dictToJSQMessage (dictionary: Dictionary<String, Any>) -> JSQMessage{
         if each.key == "username" || each.key == "sender" || each.key == "name" || each.key == "senderName" {
             parsedUsername = each.value as! String
         }
-    }
-    let message = JSQMessage(senderId: parsedUsername, displayName: parsedUsername, text: parsedMessage)
-    //print(message as Any)
-    return message!
-}
-
-// Image messages converting
-
-func mediaMessage () {
-    
-}
-
-
-
-
-
-///////////////// depricated functions used for custom UI. Can be removed as soon as ChatView is not supported //////////
-
-func messageItemToDictionary(_ chatmessage : MessageItem) -> [String : NSString]{
-    return [
-        //"uuid": NSString(string: chatmessage.uuid),
-        "username": NSString(string: chatmessage.username),
-        "message": NSString(string: chatmessage.message)
-    ]
-}
-
-func dictToMessage (dictionary: Dictionary<String, NSString>) -> MessageItem {
-    var parsedMessage = ""
-    var parsedUsername = "Anonymos"
-    for each in dictionary {
-        if each.key == "message" || each.key == "text" || each.key == "chatMsg"  {
-            parsedMessage = each.value as String
-        } else {
-            parsedMessage = "Incorect message format"
-        }
-        if each.key == "username" || each.key == "sender" || each.key == "author" || each.key == "name" || each.key == "senderName" {
-            parsedUsername = each.value as String
+        if each.key == "media" || each.key == "stickers"{
+            parsedMediaUrl = each.value as! String
         }
     }
+    if parsedMediaUrl != ""{
+        let photo = JSQPhotoMediaItem(image: nil)
+                    let fileUrl = parsedMediaUrl
+                    let downloader = SDWebImageDownloader.shared()
+        downloader?.downloadImage(with: URL(string: fileUrl)!, options: [], progress: nil, completed: { (image, data, error, finished) in
+                        DispatchQueue.main.async(execute: {
+                            photo?.image = image
+                        })
+                    })
+        let message = JSQMessage(senderId: parsedUsername, displayName: parsedUsername, media: photo)
+        //print("JSQMessage madia message: \(message)")
+        return message!
+    } else {
+        let message = JSQMessage(senderId: parsedUsername, displayName: parsedUsername, text: parsedMessage)
+        //print("JSQMessage: \(message)")
+        return message!
+    }
     
-    
-    return MessageItem(senderId: parsedUsername, username: parsedUsername, message: parsedMessage, media: "")
-   
 }
-
-

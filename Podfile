@@ -9,11 +9,12 @@ target ‘Chat’ do
     # that must have a minimum deployment 
     # target of iOS 7 
     platform :ios, '7.0' # (if you don't need to use iOS 7, then see other Podfile)
-    pod "PubNub", "~> 4"
+    pod 'PubNub', '~> 4'
     pod 'JSQMessagesViewController'
-    pod "StickerPipe"
+    pod 'StickerPipe'
     pod 'Firebase/Storage'
     pod 'Firebase/Auth'
     pod 'Firebase/Database'
+    pod 'SDWebImage'
     
 end
