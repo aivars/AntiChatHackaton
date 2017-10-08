@@ -22,15 +22,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PNObjectEventListener {
         // Override point for customization after application launch.
         FirebaseApp.configure()
         
-        // stickers startSTKStickerManager
-        
-//        [STKStickersManager initWithApiKey: apiKey];
-//        [STKStickersManager setStartTimeInterval];
-//        [STKStickersManager setUserKey: [self userId]];
-        
-        
-        // stickers end
-        
         // Initialize and configure PubNub client instance
         let configuration = PNConfiguration(publishKey: "demo", subscribeKey: "demo")
         self.client = PubNub.clientWithConfiguration(configuration)

@@ -14,8 +14,10 @@
 #import "JSQMessages.h"
 #import "JSQMessageData.h"
 #import "JSQSystemSoundPlayer.h"
-#import <Stickerpipe/Stickerpipe.h>
 #import <SDWebImage/UIImageView+WebCache.h>
 #import "SDWebImage/UIImageView+WebCache.h"
+#import "Stickerpipe/Stickerpipe.h"
+#import "Stickerpipe/STKStickersManager.h"
+#import "Stickerpipe/STKImageManager.h"
 
 #endif /* Char_Bridging_Header_h */

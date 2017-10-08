@@ -11,9 +11,9 @@
 
 import UIKit
 import Firebase
-import Photos
+//import Photos
 
-class MessagesViewController: JSQMessagesViewController, PNObjectEventListener {
+class MessagesViewController: JSQMessagesViewController, PNObjectEventListener, STKStickerControllerDelegate {
     
     var messagesArray = [JSQMessage]()
     lazy var outgoingBubbleImageView: JSQMessagesBubbleImage = self.setupOutgoingBubble()
@@ -23,7 +23,8 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener {
     var userName = "Aivars" // <<-- hardcoded user name will be overvrited on login
     lazy var storageRef: StorageReference = Storage.storage().reference(forURL: "gs://socialnetwork-1dded.appspot.com")
     private let imageURLNotSet = "NOTSET"
-    var statisticLabel = UILabel(frame: CGRect(x: 10, y: 35, width: 200, height: 16))
+    var statisticLabel = UILabel(frame: CGRect(x: 10, y: 35, width: 500, height: 16))
+    var stickerController: STKStickerController!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,6 +51,9 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener {
         statisticLabel.text = "Users on channel: 0"
         selectableView.addSubview(statisticLabel)
         view.addSubview(selectableView)
+        
+        //Stickers
+        initStickers()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -94,9 +98,9 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener {
                 print(status?.errorData as Any)
             }
         })
-        
+        //self.finishReceivingMessage()
     }
-    // Update active users value on joi,leave, etc events
+    // Update active users value on join,leave, etc events
     func client(_ client: PubNub, didReceivePresenceEvent event: PNPresenceEventResult) {
         getStatistisc() // Occupancy also can be used as value, could be tested later
         // refresh frequency limit can be used for production, not actual for such quite channel
@@ -226,28 +230,29 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener {
                 })
                 self.finishSendingMessage()
             }
-            
-        } else if let video = video {
-            let filePath = "\(String(describing: Auth.auth().currentUser))/\(Date.timeIntervalSinceReferenceDate)"
-            print(filePath)
-            let data = try? Data(contentsOf: video)
-            let metadata = StorageMetadata()
-            metadata.contentType = "video/mp4"
-            Storage.storage().reference().child(filePath).putData(data!, metadata: metadata) { (metadata, error)
-                in
-                if error != nil {
-                    print(error?.localizedDescription as Any)
-                    return
-                }
-                
-                let fileUrl = metadata!.downloadURLs![0].absoluteString
-                
-                //                let newMessage = self.messageRef.childByAutoId()
-                //                let messageData = ["fileUrl": fileUrl, "senderId": self.senderId, "senderName": self.senderDisplayName, "MediaType": "VIDEO"]
-                //                newMessage.setValue(messageData)
-                
-            }
+            // TODO - implement video sending
         }
+    }
+    
+    // MARK: Stickers
+    func initStickers () {
+        STKStickersManager.initWithApiKey("6b5d54b800f7abd411523a7634e4a581")
+        STKStickersManager.setStartTimeInterval()
+        STKStickersManager.setUserKey(userName)
+        stickerController = STKStickerController()
+        stickerController.delegate = self
+        stickerController.textInputView = keyboardController.textView
+    }
+    
+    func stickerController(_ stickerController: STKStickerController!, didSelectStickerWithMessage message: String!) {
+        stickerController.imageManager.getImageForStickerMessage(message, withProgress: nil) {
+            (error: Error?, image: UIImage?) in
+            self.sendMedia(image, video: nil)
+        }
+    }
+    
+    func stickerControllerViewControllerForPresentingModalView() -> UIViewController! {
+        return self
     }
 
 }
@@ -257,15 +262,12 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener {
 extension MessagesViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         print(info)
-        print("did finish picking")
+        print("did finish picking image")
         // get the image
         print(info)
         if let picture = info[UIImagePickerControllerOriginalImage] as? UIImage {
             sendMedia(picture, video: nil)
         }
-//        else if let video = info[UIImagePickerControllerMediaURL] as? URL {
-//            sendMedia(nil, video: video)
-//        }
         self.dismiss(animated: true, completion: nil)
     }
 }
