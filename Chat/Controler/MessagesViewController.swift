@@ -23,7 +23,7 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener, 
     var userName = "Aivars" // <<-- hardcoded user name will be overvrited on login
     lazy var storageRef: StorageReference = Storage.storage().reference(forURL: "gs://socialnetwork-1dded.appspot.com")
     private let imageURLNotSet = "NOTSET"
-    var statisticLabel = UILabel(frame: CGRect(x: 10, y: 35, width: 500, height: 16))
+    var statisticLabel = UILabel(frame: CGRect(x: 10, y: 35, width: 300, height: 16))
     var stickerController: STKStickerController!
 
     override func viewDidLoad() {
@@ -45,7 +45,7 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener, 
         self.collectionView.backgroundColor = UIColor.black
         self.collectionView?.collectionViewLayout.sectionInset = UIEdgeInsets(top: 60, left: 0, bottom: 0, right: 0)
         // Add view on top for custome labels
-        let selectableView = UIView(frame: CGRect(x: 0, y: 0, width: self.view.bounds.width, height: 60))
+        let selectableView = UIView(frame: CGRect(x: 0, y: 0, width: 500, height: 60))
         selectableView.backgroundColor = .black
         statisticLabel.textColor = UIColor.white
         statisticLabel.text = "Users on channel: 0"
@@ -54,6 +54,19 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener, 
         
         //Stickers
         initStickers()
+        
+        // Layout improvements for iPhone X design
+        print(" // Layout improvements for iPhone X design")
+        if #available(iOS 11, *) {
+            let guide = view.safeAreaLayoutGuide
+            NSLayoutConstraint.activate([
+                collectionView.topAnchor.constraintEqualToSystemSpacingBelow(guide.topAnchor, multiplier: 1.0),
+                guide.bottomAnchor.constraintEqualToSystemSpacingBelow(inputToolbar.bottomAnchor, multiplier: 1.0)
+                ])
+            }
+        print(" // Layout improvements for iPhone X design")
+        
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -88,6 +101,7 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener, 
                         if messageDictionary != nil {
                             self.messagesArray.append(dictToJSQMessage(dictionary : messageDictionary!))
                             self.finishReceivingMessage()
+                            self.collectionView.reloadData()
                         }
                     } catch {
                        print("error in mesage parsing for: \(message)")
@@ -248,6 +262,8 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener, 
         stickerController.imageManager.getImageForStickerMessage(message, withProgress: nil) {
             (error: Error?, image: UIImage?) in
             self.sendMedia(image, video: nil)
+            stickerController.hideStickersView()
+            //self.dismiss(animated: true, completion: nil)
         }
     }
     

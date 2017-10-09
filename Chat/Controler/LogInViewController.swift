@@ -18,6 +18,7 @@ class LogInViewController: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        //bindtoKeyboard()
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {

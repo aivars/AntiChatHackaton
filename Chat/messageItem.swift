@@ -8,6 +8,7 @@
 
 import Foundation
 
+//Struct is depricated as JSQMessages are used
 struct MessageItem {
     var senderId: String
     var username: String
