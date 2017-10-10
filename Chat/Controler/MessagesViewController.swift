@@ -11,7 +11,6 @@
 
 import UIKit
 import Firebase
-//import Photos
 
 class MessagesViewController: JSQMessagesViewController, PNObjectEventListener, STKStickerControllerDelegate {
     
@@ -55,27 +54,32 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener, 
         //Stickers
         initStickers()
         
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        chanelHistory()
+        finishReceivingMessage()
+    }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
+    
+    // MARK: - iOS version handling
+    func iosVersionHandling(){
         // Layout improvements for iPhone X design
         print(" // Layout improvements for iPhone X design")
         if #available(iOS 11, *) {
             let guide = view.safeAreaLayoutGuide
             NSLayoutConstraint.activate([
-                collectionView.topAnchor.constraintEqualToSystemSpacingBelow(guide.topAnchor, multiplier: 1.0),
-                guide.bottomAnchor.constraintEqualToSystemSpacingBelow(inputToolbar.bottomAnchor, multiplier: 1.0)
+                guide.bottomAnchor.constraintEqualToSystemSpacingBelow(inputToolbar.contentView.bottomAnchor, multiplier: 1.0)
                 ])
-            }
-        print(" // Layout improvements for iPhone X design")
-        
-        
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        chanelHistory()
-        finishReceivingMessage()
-    }
-
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
+        }
+        /*
+         Seems that here is bug is JSQMessages
+         https://stackoverflow.com/questions/46439975/jsqmessageviewcontroller-ios11-toolbar
+         
+         https://github.com/jessesquires/JSQMessagesViewController/issues/817#issuecomment-112210938
+         */
     }
     
     // MARK: - PubNub
@@ -112,7 +116,7 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener, 
                 print(status?.errorData as Any)
             }
         })
-        //self.finishReceivingMessage()
+        self.finishReceivingMessage()
     }
     // Update active users value on join,leave, etc events
     func client(_ client: PubNub, didReceivePresenceEvent event: PNPresenceEventResult) {
@@ -142,6 +146,7 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener, 
         }
         messagesArray.append((dictToJSQMessage(dictionary: receivedMessage as! Dictionary<String, String>)))
         self.finishReceivingMessage()
+        print(receivedMessage)
     }
     
     // MARK: - Configure collectionView for message displaying
@@ -244,7 +249,7 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener, 
                 })
                 self.finishSendingMessage()
             }
-            // TODO - implement video sending
+            // TODO - finalise function for video handling
         }
     }
     
@@ -263,7 +268,6 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener, 
             (error: Error?, image: UIImage?) in
             self.sendMedia(image, video: nil)
             stickerController.hideStickersView()
-            //self.dismiss(animated: true, completion: nil)
         }
     }
     
@@ -274,7 +278,6 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener, 
 }
 
 // MARK: Image Picker Delegate
-
 extension MessagesViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         print(info)
@@ -287,4 +290,3 @@ extension MessagesViewController: UIImagePickerControllerDelegate, UINavigationC
         self.dismiss(animated: true, completion: nil)
     }
 }
-
