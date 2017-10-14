@@ -9,7 +9,7 @@
 import Foundation
 
 //Struct is depricated as JSQMessages are used
-struct MessageItem {
+struct ParsedMessageItem {
     var senderId: String
     var username: String
     var message: String
@@ -21,6 +21,7 @@ func dictToJSQMessage (dictionary: Dictionary<String, Any>) -> JSQMessage{
     var parsedMessage = "Incorect message format"
     var parsedUsername = "Anonymos"
     var parsedMediaUrl = ""
+    var mediaData = ConvertMediaItem()
     
     for each in dictionary {
         if each.key == "message" || each.key == "text" || each.key == "chatMsg"  {
@@ -34,21 +35,38 @@ func dictToJSQMessage (dictionary: Dictionary<String, Any>) -> JSQMessage{
         }
     }
     if parsedMediaUrl != ""{
-        let photo = JSQPhotoMediaItem(image: nil)
+        //let photo = JSQPhotoMediaItem(image: nil)
                     let fileUrl = parsedMediaUrl
                     let downloader = SDWebImageDownloader.shared()
         downloader?.downloadImage(with: URL(string: fileUrl)!, options: [], progress: nil, completed: { (image, data, error, finished) in
                         DispatchQueue.main.async(execute: {
-                            photo?.image = image
+                            //photo?.image = image
+                            if let downloadedImage = image{
+                                mediaData = ConvertMediaItem(image: downloadedImage)
+                                if let imageView = mediaData.mediaView() as? UIImageView {
+                                    imageView.contentMode = .scaleAspectFit
+                                    
+                                }
+                            }
                         })
                     })
-        let message = JSQMessage(senderId: parsedUsername, displayName: parsedUsername, media: photo)
-        //print("JSQMessage madia message: \(message)")
-        return message!
+        let message = JSQMessage(senderId: parsedUsername, displayName: parsedUsername, media: mediaData)!
+        print("JSQMessage madia message: \(String(describing: message))")
+        return message
     } else {
-        let message = JSQMessage(senderId: parsedUsername, displayName: parsedUsername, text: parsedMessage)
-        //print("JSQMessage: \(message)")
-        return message!
+        let message = JSQMessage(senderId: parsedUsername, displayName: parsedUsername, text: parsedMessage)!
+        print("JSQMessage: \(String(describing: message))")
+        return message
     }
     
+}
+
+private class ConvertMediaItem: JSQPhotoMediaItem {
+    override func mediaView() -> UIView! {
+        let view = super.mediaView()
+        
+        view?.contentMode = .scaleAspectFit
+        
+        return view
+    }
 }

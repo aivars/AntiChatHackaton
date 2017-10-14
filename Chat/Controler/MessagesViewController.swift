@@ -77,9 +77,35 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener, 
         /*
          Seems that here is bug is JSQMessages
          https://stackoverflow.com/questions/46439975/jsqmessageviewcontroller-ios11-toolbar
-         
          https://github.com/jessesquires/JSQMessagesViewController/issues/817#issuecomment-112210938
          */
+    }
+    
+    private func addAndShowSuggests() {
+        let layout = UICollectionViewFlowLayout()
+        
+        let stickerCollectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
+        stickerCollectionView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(stickerCollectionView)
+        
+        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|stickerCollectionView|", options: [], metrics: nil, views: ["stickerCollectionView": stickerCollectionView]))
+        
+        stickerCollectionView.addConstraint(NSLayoutConstraint(item: stickerCollectionView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 80.0))
+        
+        view.addConstraint(NSLayoutConstraint(item: stickerCollectionView, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .top, multiplier: 1.0, constant: 0.0))
+        
+        stickerController.suggestCollectionView = stickerCollectionView
+        stickerController.showSuggests = true
+    }
+    
+    private class ConvertMediaItem: JSQPhotoMediaItem {
+        override func mediaView() -> UIView! {
+            let view = super.mediaView()
+            
+            view?.contentMode = .scaleAspectFit
+            
+            return view
+        }
     }
     
     // MARK: - PubNub
@@ -145,6 +171,7 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener, 
             return
         }
         messagesArray.append((dictToJSQMessage(dictionary: receivedMessage as! Dictionary<String, String>)))
+        self.collectionView.reloadData()
         self.finishReceivingMessage()
         print(receivedMessage)
     }
@@ -162,7 +189,7 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener, 
     
     override func collectionView(_ collectionView: JSQMessagesCollectionView!, messageBubbleImageDataForItemAt indexPath: IndexPath!) -> JSQMessageBubbleImageDataSource! {
         let message = messagesArray[indexPath.item] //mesage retrieved
-        if message.senderId == senderId { // locel user message
+        if message.senderId == senderId { // local user message
             return outgoingBubbleImageView
         } else { // income message
             return incomingBubbleImageView
@@ -266,7 +293,36 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener, 
     func stickerController(_ stickerController: STKStickerController!, didSelectStickerWithMessage message: String!) {
         stickerController.imageManager.getImageForStickerMessage(message, withProgress: nil) {
             (error: Error?, image: UIImage?) in
-            self.sendMedia(image, video: nil)
+            //self.sendMedia(image, video: nil)
+            
+            let mediaData = ConvertMediaItem(image: image!)
+
+            if let imageView = mediaData?.mediaView() as? UIImageView {
+                imageView.contentMode = .scaleAspectFit
+            }
+
+
+            let message = JSQMessage(senderId: self.senderId, displayName: self.senderDisplayName, media: mediaData)!
+
+//            self.client?.publish(msg, toChannel: self.channelName,
+//                                 compressed: false, withCompletion: { (status) in
+//                                    if !status.isError {
+//                                        // Message successfully published to specified channel.
+//                                        JSQSystemSoundPlayer.jsq_playMessageSentSound() // message sent sound
+//                                        print("Sucessfully published message")
+//                                        print(msg)
+//                                    }
+//                                    else{
+//                                        print("ERROR - SENDING MESSAGE FAILED")
+//                                        print(status)
+//                                    }
+//            })
+//            self.finishSendingMessage()
+//
+            self.messagesArray.append(message)
+            
+            self.finishSendingMessage(animated: true)
+            
             stickerController.hideStickersView()
         }
     }
