@@ -6,9 +6,6 @@
 //  Copyright © 2017. g. Aivars Meijers. All rights reserved.
 //
 
-
-
-
 import UIKit
 import Firebase
 
@@ -21,7 +18,7 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener, 
     var channelName = "antichat_hackathon" // <<-- Hardcoded chat channel used for hackaton
     var userName = "Aivars" // <<-- hardcoded user name will be overvrited on login
     lazy var storageRef: StorageReference = Storage.storage().reference(forURL: "gs://socialnetwork-1dded.appspot.com")
-    private let imageURLNotSet = "NOTSET"
+    //private let imageURLNotSet = "NOTSET"
     var statisticLabel = UILabel(frame: CGRect(x: 10, y: 35, width: 300, height: 16))
     var stickerController: STKStickerController!
 
@@ -105,27 +102,27 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener, 
     }
     //fetch channel history
     func chanelHistory(){
-//        client?.historyForChannel(channelName, withCompletion: { (result, status) in
-//            if status == nil {
-//                print(result?.data.messages as Any)
-//                for message in (result?.data.messages)! {
-//                    do {
-//                        let messageDictionary = try message as? Dictionary<String, Any>
-//                        if messageDictionary != nil {
-//                            self.messagesArray.append(dictToJSQMessage(dictionary : messageDictionary!))
-//                            self.finishReceivingMessage()
-//                            self.collectionView.reloadData()
-//                        }
-//                    } catch {
-//                       print("error in mesage parsing for: \(message)")
-//                    }
-//                }
-//            }
-//            else {
-//                print(status?.errorData as Any)
-//            }
-//        })
-//        self.finishReceivingMessage()
+        client?.historyForChannel(channelName, withCompletion: { (result, status) in
+            if status == nil {
+                print(result?.data.messages as Any)
+                for message in (result?.data.messages)! {
+                    do {
+                        let messageDictionary = try message as? Dictionary<String, Any>
+                        if messageDictionary != nil {
+                            self.parseAndDisplayMessages(message: messageDictionary!)
+                            
+                            self.finishReceivingMessage()
+                            self.collectionView.reloadData()
+                        }
+                    } catch {
+                       print("error in mesage parsing for: \(message)")
+                    }
+                }
+            }
+            else {
+                print(status?.errorData as Any)
+            }
+        })
     }
     // Update active users value on join,leave, etc events
     func client(_ client: PubNub, didReceivePresenceEvent event: PNPresenceEventResult) {
@@ -153,36 +150,51 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener, 
             print("No payload received")
             return
         }
-        //messagesArray.append((dictToJSQMessage(dictionary: receivedMessage as! Dictionary<String, String>)))
-        let parsedMesage = dictToMessage(dictionary: receivedMessage as! Dictionary<String, Any>)
-            print(parsedMesage)
-        let fileUrl = parsedMesage.media
-        let downloader = SDWebImageDownloader.shared()
-        downloader?.downloadImage(with: URL(string: fileUrl)!, options: [], progress: nil, completed: { (downloadedImage, data, error, finished) in
-            DispatchQueue.main.async(execute: {
-                
-                let mediaData = ConvertMediaItem(image: downloadedImage!)
-                if let imageView = mediaData?.mediaView() as? UIImageView {
-                    imageView.contentMode = .scaleAspectFit
-                }
-                let message = JSQMessage(senderId: parsedMesage.senderId, displayName: parsedMesage.username, media: mediaData)!
-                print(message)
-                self.messagesArray.append(message)
-                self.finishSendingMessage(animated: true)
-                
-                self.collectionView.reloadData()
-            })
-        })
-        
+        parseAndDisplayMessages(message: receivedMessage as! Dictionary<String, Any>)
+
         self.collectionView.reloadData()
         self.finishReceivingMessage()
         print(receivedMessage)
     }
     
+    func parseAndDisplayMessages( message: Dictionary<String, Any>) {
+        let parsedMesage = dictToMessage(dictionary: message )
+        print(parsedMesage)
+        if parsedMesage.media != "" { //This is media message
+            let fileUrl = parsedMesage.media
+            let downloader = SDWebImageDownloader.shared()
+             print("parsedMesage for prosing ================= \(parsedMesage)")
+            downloader?.downloadImage(with: URL(string: fileUrl)!, options: [], progress: nil, completed: { (downloadedImage, data, error, finished) in
+                DispatchQueue.main.async(execute: {
+                    let isImageDonwloaded = downloadedImage != nil
+                    if isImageDonwloaded {
+                        let mediaData = ConvertMediaItem(image: downloadedImage!)
+                        if let imageView = mediaData?.mediaView() as? UIImageView {
+                            imageView.contentMode = .scaleAspectFit
+                        }
+                        let message = JSQMessage(senderId: parsedMesage.senderId, displayName: parsedMesage.username, media: mediaData)!
+                        print(message)
+                        self.messagesArray.append(message)
+                        self.finishSendingMessage(animated: true)
+                        // // //self.collectionView.reloadData()
+                    }
+                })
+            })
+        }
+        if parsedMesage.message != "Incorect message format" { // This is correctly parsed text message and worth displaying
+            let message = JSQMessage(senderId: parsedMesage.senderId, displayName: parsedMesage.username, text: parsedMesage.message)!
+            print(message)
+            self.messagesArray.append(message)
+            self.finishSendingMessage(animated: true)
+            //self.collectionView.reloadData()
+        }
+        
+    }
+    
     // MARK: - Configure collectionView for message displaying
     private func setupOutgoingBubble() -> JSQMessagesBubbleImage {
         let bubbleImageFactory = JSQMessagesBubbleImageFactory()
-        return bubbleImageFactory!.outgoingMessagesBubbleImage(with: UIColor.yellow)
+        return bubbleImageFactory!.outgoingMessagesBubbleImage(with: UIColor.brown)
     }
     
     private func setupIncomingBubble() -> JSQMessagesBubbleImage {
@@ -211,15 +223,9 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener, 
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return messagesArray.count
     }
-    
-    // MARK : Message procesing
-    // publish on send button
-    override func didPressSend(_ button: UIButton!, withMessageText text: String!, senderId: String!, senderDisplayName: String!, date: Date!) {
-        let messageItem = [ // dictionary for message presenting
-            "senderId": senderId!,
-            "senderName": senderDisplayName!,
-            "text": text!,]
-        self.client?.publish(messageItem, toChannel: channelName,
+    // mesage pushing to the chanel
+    func publishMessage(message: Dictionary<String, Any>) {
+        self.client?.publish(message, toChannel: channelName,
                              compressed: false, withCompletion: { (status) in
                                 if !status.isError {
                                     // Message successfully published to specified channel.
@@ -231,7 +237,17 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener, 
                                     print(status)
                                 }
         })
-        finishSendingMessage()
+        finishSendingMessage(animated: true)
+    }
+    
+    // MARK : Message procesing
+    // publish on send button
+    override func didPressSend(_ button: UIButton!, withMessageText text: String!, senderId: String!, senderDisplayName: String!, date: Date!) {
+        let messageItem = [ // dictionary for message presenting
+            "senderId": senderId!,
+            "senderName": senderDisplayName!,
+            "text": text!,]
+        publishMessage(message: messageItem)
     }
     
     // Open image picker
@@ -262,22 +278,8 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener, 
                 let messageItem = [ // dictionary for message presenting
                     "senderId": self.senderId!,
                     "senderName": self.senderDisplayName!,
-                    //"text": text!,
                     "media": fileUrl]
-                self.client?.publish(messageItem, toChannel: self.channelName,
-                                     compressed: false, withCompletion: { (status) in
-                                        if !status.isError {
-                                            // Message successfully published to specified channel.
-                                            JSQSystemSoundPlayer.jsq_playMessageSentSound() // message sent sound
-                                            print("Sucessfully published message")
-                                            print(messageItem)
-                                        }
-                                        else{
-                                            print("ERROR - SENDING MESSAGE FAILED")
-                                            print(status)
-                                        }
-                })
-                self.finishSendingMessage()
+                self.publishMessage(message: messageItem)
             }
             // TODO - finalise function for video handling
         }
@@ -315,11 +317,8 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener, 
             (error: Error?, image: UIImage?) in
             self.sendMedia(self.makeSticker(image!), video: nil) // <-- Sticker gets black bacground and is sent to the server
             stickerController.hideStickersView()
-            
-            self.finishSendingMessage(animated: true)
         }
     }
-    
     func stickerControllerViewControllerForPresentingModalView() -> UIViewController! {
         return self
     }
