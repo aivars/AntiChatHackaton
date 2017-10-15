@@ -81,29 +81,12 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener, 
          */
     }
     
-    private func addAndShowSuggests() {
-        let layout = UICollectionViewFlowLayout()
-        
-        let stickerCollectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
-        stickerCollectionView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(stickerCollectionView)
-        
-        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|stickerCollectionView|", options: [], metrics: nil, views: ["stickerCollectionView": stickerCollectionView]))
-        
-        stickerCollectionView.addConstraint(NSLayoutConstraint(item: stickerCollectionView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: 80.0))
-        
-        view.addConstraint(NSLayoutConstraint(item: stickerCollectionView, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .top, multiplier: 1.0, constant: 0.0))
-        
-        stickerController.suggestCollectionView = stickerCollectionView
-        stickerController.showSuggests = true
-    }
-    
     private class ConvertMediaItem: JSQPhotoMediaItem {
         override func mediaView() -> UIView! {
             let view = super.mediaView()
-            
+
             view?.contentMode = .scaleAspectFit
-            
+
             return view
         }
     }
@@ -122,27 +105,27 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener, 
     }
     //fetch channel history
     func chanelHistory(){
-        client?.historyForChannel(channelName, withCompletion: { (result, status) in
-            if status == nil {
-                print(result?.data.messages as Any)
-                for message in (result?.data.messages)! {
-                    do {
-                        let messageDictionary = try message as? Dictionary<String, Any>
-                        if messageDictionary != nil {
-                            self.messagesArray.append(dictToJSQMessage(dictionary : messageDictionary!))
-                            self.finishReceivingMessage()
-                            self.collectionView.reloadData()
-                        }
-                    } catch {
-                       print("error in mesage parsing for: \(message)")
-                    }
-                }
-            }
-            else {
-                print(status?.errorData as Any)
-            }
-        })
-        self.finishReceivingMessage()
+//        client?.historyForChannel(channelName, withCompletion: { (result, status) in
+//            if status == nil {
+//                print(result?.data.messages as Any)
+//                for message in (result?.data.messages)! {
+//                    do {
+//                        let messageDictionary = try message as? Dictionary<String, Any>
+//                        if messageDictionary != nil {
+//                            self.messagesArray.append(dictToJSQMessage(dictionary : messageDictionary!))
+//                            self.finishReceivingMessage()
+//                            self.collectionView.reloadData()
+//                        }
+//                    } catch {
+//                       print("error in mesage parsing for: \(message)")
+//                    }
+//                }
+//            }
+//            else {
+//                print(status?.errorData as Any)
+//            }
+//        })
+//        self.finishReceivingMessage()
     }
     // Update active users value on join,leave, etc events
     func client(_ client: PubNub, didReceivePresenceEvent event: PNPresenceEventResult) {
@@ -170,7 +153,27 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener, 
             print("No payload received")
             return
         }
-        messagesArray.append((dictToJSQMessage(dictionary: receivedMessage as! Dictionary<String, String>)))
+        //messagesArray.append((dictToJSQMessage(dictionary: receivedMessage as! Dictionary<String, String>)))
+        let parsedMesage = dictToMessage(dictionary: receivedMessage as! Dictionary<String, Any>)
+            print(parsedMesage)
+        let fileUrl = parsedMesage.media
+        let downloader = SDWebImageDownloader.shared()
+        downloader?.downloadImage(with: URL(string: fileUrl)!, options: [], progress: nil, completed: { (downloadedImage, data, error, finished) in
+            DispatchQueue.main.async(execute: {
+                
+                let mediaData = ConvertMediaItem(image: downloadedImage!)
+                if let imageView = mediaData?.mediaView() as? UIImageView {
+                    imageView.contentMode = .scaleAspectFit
+                }
+                let message = JSQMessage(senderId: parsedMesage.senderId, displayName: parsedMesage.username, media: mediaData)!
+                print(message)
+                self.messagesArray.append(message)
+                self.finishSendingMessage(animated: true)
+                
+                self.collectionView.reloadData()
+            })
+        })
+        
         self.collectionView.reloadData()
         self.finishReceivingMessage()
         print(receivedMessage)
@@ -179,7 +182,7 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener, 
     // MARK: - Configure collectionView for message displaying
     private func setupOutgoingBubble() -> JSQMessagesBubbleImage {
         let bubbleImageFactory = JSQMessagesBubbleImageFactory()
-        return bubbleImageFactory!.outgoingMessagesBubbleImage(with: UIColor.jsq_messageBubbleGreen())
+        return bubbleImageFactory!.outgoingMessagesBubbleImage(with: UIColor.yellow)
     }
     
     private func setupIncomingBubble() -> JSQMessagesBubbleImage {
@@ -280,9 +283,26 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener, 
         }
     }
     
+    //Add black bacgroud to the image
+    func makeSticker(_ result: UIImage) -> UIImage? {
+        let newSize = CGSize(width: 400, height: 300)
+        UIGraphicsBeginImageContextWithOptions(newSize, false, UIScreen.main.scale)
+        let rect = CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height)
+        UIColor.black.setFill()
+        UIRectFill(rect)
+        let giftSizeH: CGFloat = newSize.height*0.85
+        let giftSizeW: CGFloat = result.size.width/result.size.height*giftSizeH
+        let xGiftPos = (newSize.width - giftSizeW) / 2
+        let yGiftPos = (newSize.height - giftSizeH) / 2
+        result.draw(in: CGRect(x: xGiftPos,y: yGiftPos,width: giftSizeW,height: giftSizeH), blendMode: CGBlendMode.normal, alpha:1.0)
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return newImage
+    }
+    
     // MARK: Stickers
     func initStickers () {
-        STKStickersManager.initWithApiKey("6b5d54b800f7abd411523a7634e4a581")
+        STKStickersManager.initWithApiKey("a575ae0e0b50ccc8ced80cabb9e20984")  //("6b5d54b800f7abd411523a7634e4a581")
         STKStickersManager.setStartTimeInterval()
         STKStickersManager.setUserKey(userName)
         stickerController = STKStickerController()
@@ -293,37 +313,10 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener, 
     func stickerController(_ stickerController: STKStickerController!, didSelectStickerWithMessage message: String!) {
         stickerController.imageManager.getImageForStickerMessage(message, withProgress: nil) {
             (error: Error?, image: UIImage?) in
-            //self.sendMedia(image, video: nil)
-            
-            let mediaData = ConvertMediaItem(image: image!)
-
-            if let imageView = mediaData?.mediaView() as? UIImageView {
-                imageView.contentMode = .scaleAspectFit
-            }
-
-
-            let message = JSQMessage(senderId: self.senderId, displayName: self.senderDisplayName, media: mediaData)!
-
-//            self.client?.publish(msg, toChannel: self.channelName,
-//                                 compressed: false, withCompletion: { (status) in
-//                                    if !status.isError {
-//                                        // Message successfully published to specified channel.
-//                                        JSQSystemSoundPlayer.jsq_playMessageSentSound() // message sent sound
-//                                        print("Sucessfully published message")
-//                                        print(msg)
-//                                    }
-//                                    else{
-//                                        print("ERROR - SENDING MESSAGE FAILED")
-//                                        print(status)
-//                                    }
-//            })
-//            self.finishSendingMessage()
-//
-            self.messagesArray.append(message)
+            self.sendMedia(self.makeSticker(image!), video: nil) // <-- Sticker gets black bacground and is sent to the server
+            stickerController.hideStickersView()
             
             self.finishSendingMessage(animated: true)
-            
-            stickerController.hideStickersView()
         }
     }
     

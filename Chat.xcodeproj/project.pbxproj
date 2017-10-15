@@ -80,7 +80,6 @@
 			children = (
 				60DA042D1F880E90006F3086 /* SupportFiles */,
 				60DA042C1F880E65006F3086 /* Controler */,
-				6082C9701F7F36000057DBBB /* MessageItem.swift */,
 				60DA04291F87F4B5006F3086 /* Resources */,
 				6082C96D1F7F324B0057DBBB /* Char-Bridging-Header.h */,
 				6082C9671F7F30920057DBBB /* Info.plist */,
@@ -113,6 +112,7 @@
 			children = (
 				6082C95B1F7F30920057DBBB /* AppDelegate.swift */,
 				6082C9721F7F36010057DBBB /* UIViewExtention.swift */,
+				6082C9701F7F36000057DBBB /* MessageItem.swift */,
 			);
 			path = SupportFiles;
 			sourceTree = "<group>";
