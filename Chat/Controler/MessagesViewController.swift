@@ -27,19 +27,20 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener, 
 
         // Do any additional setup after loading the view.
         initiation()
-        
+        chanelHistory()
+        updateUI()
+        initStickers()
+    }
+    
+    func updateUI() {
         senderId = userName //Auth.auth().currentUser?.uid
         senderDisplayName = userName
-        
-        // === UI changes ===
-        // remove image posting button
-        //inputToolbar.contentView.leftBarButtonItem = nil
         // No avatars
         collectionView!.collectionViewLayout.incomingAvatarViewSize = CGSize.zero
         collectionView!.collectionViewLayout.outgoingAvatarViewSize = CGSize.zero
         automaticallyScrollsToMostRecentMessage = true
-        self.collectionView.backgroundColor = UIColor.black
-        self.collectionView?.collectionViewLayout.sectionInset = UIEdgeInsets(top: 60, left: 0, bottom: 0, right: 0)
+        collectionView.backgroundColor = UIColor.black
+        //   self.collectionView?.collectionViewLayout.sectionInset = UIEdgeInsets(top: 60, left: 0, bottom: 0, right: 0)
         // Add view on top for custome labels
         let selectableView = UIView(frame: CGRect(x: 0, y: 0, width: 500, height: 60))
         selectableView.backgroundColor = .black
@@ -47,46 +48,10 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener, 
         statisticLabel.text = "Users on channel: 0"
         selectableView.addSubview(statisticLabel)
         view.addSubview(selectableView)
-        
-        //Stickers
-        initStickers()
-        
-    }
-    override func viewDidAppear(_ animated: Bool) {
-        chanelHistory()
-        finishReceivingMessage()
-    }
     
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
     }
-    
-    // MARK: - iOS version handling
-    func iosVersionHandling(){
-        // Layout improvements for iPhone X design
-        print(" // Layout improvements for iPhone X design")
-        if #available(iOS 11, *) {
-            let guide = view.safeAreaLayoutGuide
-            NSLayoutConstraint.activate([
-                guide.bottomAnchor.constraintEqualToSystemSpacingBelow(inputToolbar.contentView.bottomAnchor, multiplier: 1.0)
-                ])
-        }
-        /*
-         Seems that here is bug is JSQMessages
-         https://stackoverflow.com/questions/46439975/jsqmessageviewcontroller-ios11-toolbar
-         https://github.com/jessesquires/JSQMessagesViewController/issues/817#issuecomment-112210938
-         */
-    }
-    
-    private class ConvertMediaItem: JSQPhotoMediaItem {
-        override func mediaView() -> UIView! {
-            let view = super.mediaView()
 
-            view?.contentMode = .scaleAspectFit
-
-            return view
-        }
-    }
+    
     
     // MARK: - PubNub
     func initiation()  {
@@ -190,6 +155,19 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener, 
         }
         
     }
+    
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
+    
+    private class ConvertMediaItem: JSQPhotoMediaItem {
+        override func mediaView() -> UIView! {
+            let view = super.mediaView()
+            view?.contentMode = .scaleAspectFit
+            return view
+        }
+    }
+
     
     // MARK: - Configure collectionView for message displaying
     private func setupOutgoingBubble() -> JSQMessagesBubbleImage {

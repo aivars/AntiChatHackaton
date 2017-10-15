@@ -15,7 +15,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, PNObjectEventListener {
     var window: UIWindow?
     var client: PubNub!
     
-//    NSString* const apiKey = @"72921666b5ff8651f374747bfefaf7b2"
+
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
