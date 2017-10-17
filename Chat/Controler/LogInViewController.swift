@@ -1,7 +1,7 @@
 //
 //  LogInViewController.swift
 //  Chat
-//
+//t
 //  Created by Aivars Meijers on 06.10.17.
 //  Copyright © 2017. g. Aivars Meijers. All rights reserved.
 //
@@ -55,3 +55,4 @@ class LogInViewController: UIViewController {
     
 
 }
+
