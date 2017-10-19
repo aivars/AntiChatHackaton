@@ -69,20 +69,20 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener, 
     func chanelHistory(){
         client?.historyForChannel(channelName, withCompletion: { (result, status) in
             if status == nil {
-                print(result?.data.messages as Any)
+                //print(result?.data.messages as Any)
                 for message in (result?.data.messages)! {
                     do {
                         let messageDictionary = try message as? Dictionary<String, Any>
                         if messageDictionary != nil {
                             self.parseAndDisplayMessages(message: messageDictionary!)
                             
-                            self.finishReceivingMessage()
-                            self.collectionView.reloadData()
                         }
                     } catch {
                        print("error in mesage parsing for: \(message)")
                     }
                 }
+//                self.finishReceivingMessage()
+//                self.collectionView.reloadData()
             }
             else {
                 print(status?.errorData as Any)
@@ -128,7 +128,7 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener, 
         if parsedMesage.media != "" { //This is media message
             let fileUrl = parsedMesage.media
             let downloader = SDWebImageDownloader.shared()
-             print("parsedMesage for prosing ================= \(parsedMesage)")
+//             print("parsedMesage for proesing ================= \(parsedMesage)")
             downloader?.downloadImage(with: URL(string: fileUrl)!, options: [], progress: nil, completed: { (downloadedImage, data, error, finished) in
                 DispatchQueue.main.async(execute: {
                     let isImageDonwloaded = downloadedImage != nil
@@ -138,22 +138,23 @@ class MessagesViewController: JSQMessagesViewController, PNObjectEventListener, 
                             imageView.contentMode = .scaleAspectFit
                         }
                         let message = JSQMessage(senderId: parsedMesage.senderId, displayName: parsedMesage.username, media: mediaData)!
-                        print(message)
+//                        print(message)
                         self.messagesArray.append(message)
                         self.finishSendingMessage(animated: true)
-                        // // //self.collectionView.reloadData()
+                        
                     }
                 })
             })
+        } else if parsedMesage.message != "Incorect message format" {
+                // This is correctly parsed text message and worth displaying
+                let message = JSQMessage(senderId: parsedMesage.senderId, displayName: parsedMesage.username, text: parsedMesage.message)!
+//                print(message)
+                self.messagesArray.append(message)
+                self.finishSendingMessage(animated: true)
+            
         }
-        if parsedMesage.message != "Incorect message format" { // This is correctly parsed text message and worth displaying
-            let message = JSQMessage(senderId: parsedMesage.senderId, displayName: parsedMesage.username, text: parsedMesage.message)!
-            print(message)
-            self.messagesArray.append(message)
-            self.finishSendingMessage(animated: true)
-            //self.collectionView.reloadData()
-        }
-        
+         print(messagesArray)        
+
     }
     
     override var preferredStatusBarStyle: UIStatusBarStyle {

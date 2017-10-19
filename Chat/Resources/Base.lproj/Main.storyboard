@@ -36,6 +36,7 @@
                                 <constraints>
                                     <constraint firstAttribute="height" constant="40" id="kC7-HW-4iY"/>
                                 </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <state key="normal" title="Login anymously"/>
                                 <connections>
                                     <action selector="onLoginButton:" destination="1e4-yD-SN7" eventType="touchUpInside" id="8N2-MP-vz0"/>
