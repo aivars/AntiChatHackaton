@@ -1,4 +1,4 @@
-# AntiChatHackaton
+# PubNub chat development hackaton
 Simple chat App based on the PubNub SDK API
 
 ## Technology used:
