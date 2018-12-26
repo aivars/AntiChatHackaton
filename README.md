@@ -5,7 +5,7 @@ Simple chat App based on the PubNub SDK API
 
 PubNub - chat API
 
-SQMessagesViewController - chat UI
+JSQMessagesViewController - chat UI
 
 StickerPipe - Stickers
 
